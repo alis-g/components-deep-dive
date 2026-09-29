@@ -5,10 +5,11 @@ import Pagination from './components/Pagination'
 import UserList from './components/UserList'
 import UserSearch from './components/UserSerach'
 import './styles.css'
+import CreateEditModal from './components/CreateEditModeal'
 
 function App() {
   const [users, setUsers] = useState([]);
-
+  const [showSaveUserModal, setShowSaveUserModal] = useState(false)
   
 
   useEffect(() =>{
@@ -22,6 +23,9 @@ function App() {
     .catch(error => console.error("Error fetching users:", error))
   }, [])
 
+    const addUserClickHandler = () => {
+      setShowSaveUserModal(true)
+    }
   return (
     <>
       <Header />
@@ -32,7 +36,12 @@ function App() {
           <UserSearch />
 
           <UserList users = {users}/>
-          <button className="btn-add btn">Add new user</button>
+
+          <button className="btn-add btn" onClick={addUserClickHandler}>Add new user</button>
+          
+          {showSaveUserModal && <CreateEditModal />}
+
+
           <Pagination />
         </section>
 
