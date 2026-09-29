@@ -16,15 +16,11 @@ function App() {
 
 
     useEffect(() => {
-        fetch(baseUrl, {
-            headers: {
-                'apikey': apiKey
-            }
-        })
-            .then(res => res.json())
+        fetchUsers(users)
             .then(data => setUsers(data))
             .catch(error => console.error("Error fetching users:", error))
     }, [])
+
 
     const addUserClickHandler = () => {
         setShowSaveUserModal(true)
@@ -34,18 +30,24 @@ function App() {
         setShowSaveUserModal(false)
     };
 
-    const submitUserHandler = (user) =>{
-        fetch(baseUrl,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'apikey': apiKey
-            },
-            body: JSON.stringify(user)
-        })
-        .then(()=> console.log('User added:'))
-        .catch(error => console.error(error))
-        .finally(()=> setShowSaveUserModal(false))
+    const submitUserHandler = async (user) => {
+
+        try {
+            await fetch(baseUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': apiKey
+                },
+                body: JSON.stringify(user)
+            })
+            const updateUsers = await fetchUsers()
+            setUsers(updateUsers)
+        } catch (error) {
+            alert(error)
+        } finally {
+            setShowSaveUserModal(false)
+        }
     }
     return (
         <>
@@ -62,7 +64,7 @@ function App() {
 
                     {showSaveUserModal && <CreateEditModal onClose={addUserCloseHandler} onSubmit={submitUserHandler} />}
 
-                    
+
                     <Pagination />
                 </section>
 
@@ -79,4 +81,14 @@ function App() {
     )
 }
 
+async function fetchUsers() {
+    const response = await fetch(baseUrl, {
+        headers: {
+            'apikey': apiKey
+        }
+    })
+
+    const data = await response.json()
+    return data
+}
 export default App
