@@ -7,15 +7,18 @@ import UserSearch from './components/UserSerach'
 import './styles.css'
 import CreateEditModal from './components/CreateEditModeal.jsx'
 
+const baseUrl = 'https://mjwdadmkprxoobcrtvzj.supabase.co/rest/v1/users';
+const apiKey = 'sb_publishable_LVP7qrwB4p3YreIf-f19Iw_YST_YdAN'
+
 function App() {
     const [users, setUsers] = useState([]);
     const [showSaveUserModal, setShowSaveUserModal] = useState(false)
 
 
     useEffect(() => {
-        fetch('https://mjwdadmkprxoobcrtvzj.supabase.co/rest/v1/users', {
+        fetch(baseUrl, {
             headers: {
-                'apikey': 'sb_publishable_LVP7qrwB4p3YreIf-f19Iw_YST_YdAN'
+                'apikey': apiKey
             }
         })
             .then(res => res.json())
@@ -30,6 +33,20 @@ function App() {
     const addUserCloseHandler = () => {
         setShowSaveUserModal(false)
     };
+
+    const submitUserHandler = (user) =>{
+        fetch(baseUrl,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': apiKey
+            },
+            body: JSON.stringify(user)
+        })
+        .then(()=> console.log('User added:'))
+        .catch(error => console.error(error))
+        .finally(()=> setShowSaveUserModal(false))
+    }
     return (
         <>
             <Header />
@@ -43,7 +60,7 @@ function App() {
 
                     <button className="btn-add btn" onClick={addUserClickHandler}>Add new user</button>
 
-                    {showSaveUserModal && <CreateEditModal onClose={addUserCloseHandler} />}
+                    {showSaveUserModal && <CreateEditModal onClose={addUserCloseHandler} onSubmit={submitUserHandler} />}
 
                     
                     <Pagination />
